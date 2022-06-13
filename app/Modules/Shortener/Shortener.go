@@ -58,7 +58,7 @@ func GetPathForRedirect(db *sql.DB, path string, userToken string) UsersPaths {
 
 func GetPaths(db *sql.DB, userToken string) []UsersPaths {
 	rows, err := db.Query(fmt.Sprintf(`
-		SELECT from_path AS FromPath,
+		SELECT DISTINCT(from_path) AS FromPath,
 		       to_path AS ToPath,
 		       expire_date AS ExpireDate
 		FROM user_path
@@ -100,7 +100,7 @@ func CreatPath(db *sql.DB, data UsersPaths, userToken string) (bool, error) {
 		`,
 		userToken,
 		data.ToPath,
-		data.FromPath,
+		"/"+data.FromPath,
 		data.ExpireDate.Format("2006-1-2 15:4:5"),
 	))
 	if err != nil {

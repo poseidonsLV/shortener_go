@@ -10,6 +10,9 @@ import (
 
 func Route(db *sql.DB) {
 	http.HandleFunc("/", func(res http.ResponseWriter, req *http.Request) {
+		res.Header().Set("Access-Control-Allow-Origin", "http://localhost:63342")
+		res.Header().Set("Access-Control-Allow-Credentials", "true")
+		res.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		userToken, errToken := req.Cookie("SHRTTOKEN")
 		if errToken != nil {
 			_, err := res.Write([]byte("Token is not found"))
@@ -34,6 +37,10 @@ func Route(db *sql.DB) {
 	})
 
 	http.HandleFunc("/api/getPaths", func(res http.ResponseWriter, req *http.Request) {
+		res.Header().Set("Access-Control-Allow-Origin", "http://localhost:63342")
+		res.Header().Set("Access-Control-Allow-Credentials", "true")
+		res.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+
 		userToken, errToken := req.Cookie("SHRTTOKEN")
 		if errToken != nil {
 			_, err := res.Write([]byte("Token is not found"))
@@ -46,6 +53,7 @@ func Route(db *sql.DB) {
 		data := Shortener.GetPaths(db, userToken.Value)
 
 		res.Header().Set("Content-Type", "application/json")
+		//Allow CORS here By * or specific origin
 
 		if err := json.NewEncoder(res).Encode(data); err != nil {
 			http.Error(res, err.Error(), http.StatusInternalServerError)
@@ -54,6 +62,9 @@ func Route(db *sql.DB) {
 	})
 
 	http.HandleFunc("/api/createPath", func(res http.ResponseWriter, req *http.Request) {
+		res.Header().Set("Access-Control-Allow-Origin", "http://localhost:63342")
+		res.Header().Set("Access-Control-Allow-Credentials", "true")
+		res.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		var up Shortener.UsersPaths
 		var cookie http.Cookie
 		var tokenValue string
