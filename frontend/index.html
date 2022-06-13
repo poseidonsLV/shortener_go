@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Get all user paths</title>
+</head>
+<body>
+    <H1>Create Path</H1>
+    <form id="createPath" method="POST">
+        <label for="path_to_redirect">Path to</label>
+        <input type="text" id="path_to_redirect" name="path_to_redirect">
+        <label for="path_from_redirect">Path from</label>
+        <input type="text" id="path_from_redirect" name="path_from_redirect">
+        <button>Submit ( create )</button>
+    </form>
+    <div class="paths">
+        <h1>Paths</h1>
+    </div>
+</body>
+</html>
+
+<style>
+    .path {
+        padding: 10px;
+        background: lightblue;
+        font-size: 1.2rem;
+        margin: 5px;
+        border: 2px solid black;
+    }
+</style>
+
+<script>
+    async function getAllPaths() {
+        let data = await fetch('http://localhost:8001/api/getPaths', {
+            credentials: 'include'
+        });
+        data = await data.json()
+        displayPaths(data)
+    }
+
+    function displayPaths(data) {
+        const paths = document.querySelector('.paths');
+        paths.innerHTML = "";
+        data.forEach(path => {
+            let div = document.createElement('div');
+            div.className = 'path'
+
+            let p1 = document.createElement('strong');
+            p1.className = 'from_path'
+            p1.appendChild(createText(path.FromPath))
+
+            let p2 = document.createElement('p');
+            p2.className = 'to_path'
+            p2.appendChild(createText(path.ToPath))
+
+            let p3 = document.createElement('p');
+            p3.className = 'expiration_date'
+            p3.appendChild(createText(path.ExpireDate))
+
+            let btn = document.createElement('button');
+            btn.className = 'test_btn'
+            btn.appendChild(createText('Test'))
+            btn.addEventListener('click', function () {
+                redirectUser(path.FromPath)
+            })
+
+            div.appendChild(p1)
+            div.appendChild(p2)
+            div.appendChild(p3)
+            div.appendChild(btn)
+
+            paths.appendChild(div)
+        })
+    }
+
+    function createText(text) {
+        return document.createTextNode(text)
+    }
+
+    function redirectUser(path) {
+        document.location.href = 'http://localhost:8001' + path
+    }
+
+    const form = document.querySelector('#createPath')
+
+    form.addEventListener('submit', createPath)
+
+    async function createPath(e) {
+        e.preventDefault()
+        let toPath = e.target[0].value
+        let fromPath = e.target[1].value
+
+        let data = await fetch('http://localhost:8001/api/createPath', {
+            method: 'POST',
+            body: JSON.stringify({
+                "FromPath": fromPath,
+                "ToPath": toPath,
+                "ExpireDate": "2023-01-02T15:04:05Z"
+            }),
+            credentials: 'include'
+        });
+
+        if (data) {
+            await getAllPaths()
+        }
+    }
+
+    getAllPaths()
+</script>
