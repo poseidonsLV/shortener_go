@@ -16,7 +16,7 @@ func GetConnection() *sql.DB {
 func ConnectDatabase() {
 	// Capture connection properties.
 	user := "postgres"
-	password := "........"
+	password := "proddbpassword"
 	host := "127.0.0.1"
 	port := "5432"
 	dbname := "shortener"
